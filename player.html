@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalhes do Jogador</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #2b2b2b;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid #444;
+    }
+
+    th {
+      background-color: #3a3a3a;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back a {
+      color: #00aaff;
+      text-decoration: none;
+    }
+
+    .back a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Detalhes do Jogador</h1>
+    <h2 id="playerName">Carregando...</h2>
+    <table id="playerDetails"></table>
+    <div class="back">
+      <a href="index.html">← Voltar para a lista</a>
+    </div>
+  </div>
+
+  <script>
+    async function loadPlayerDetails() {
+      const params = new URLSearchParams(window.location.search);
+      const id = parseInt(params.get('id'), 10);
+
+      if (!id) {
+        document.getElementById('playerDetails').innerHTML = "<tr><td>ID inválido.</td></tr>";
+        return;
+      }
+
+      const res = await fetch('players.json');
+      const players = await res.json();
+      const player = players.find(p => p.ID === id);
+
+      if (!player) {
+        document.getElementById('playerDetails').innerHTML = "<tr><td>Jogador não encontrado.</td></tr>";
+        return;
+      }
+
+      document.getElementById('playerName').textContent = `${player.Name} (${player["Overall Rating"]})`;
+
+      const table = document.getElementById('playerDetails');
+      table.innerHTML = '';
+
+      for (const [key, value] of Object.entries(player)) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <th>${key}</th>
+          <td>${value}</td>
+        `;
+        table.appendChild(row);
+      }
+    }
+
+    loadPlayerDetails();
+  </script>
+</body>
+</html>
